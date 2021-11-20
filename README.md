@@ -1,5 +1,5 @@
 # zsh-auto-venv
-Automatically activate venv when enter the project folder
+Automatically activate venv when you enter a project folder.
 
 ## Installation
 
@@ -8,7 +8,7 @@ Automatically activate venv when enter the project folder
 1. Add the following to your `.zshrc`:
 
     ```sh
-    antigen bundle ikhomutov/zsh-auto-venv
+    antigen bundle k-sriram/zsh-auto-venv
     ```
 
 2. Start a new terminal session.
@@ -18,7 +18,7 @@ Automatically activate venv when enter the project folder
 1. Clone this repository into `$ZSH_CUSTOM/plugins` (by default `~/.oh-my-zsh/custom/plugins`)
 
     ```sh
-    git clone https://github.com/ikhomutov/zsh-auto-venv ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-auto-venv
+    git clone https://github.com/k-sriram/zsh-auto-venv ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-auto-venv --depth=1
     ```
 
 2. Add the plugin to the list of plugins for Oh My Zsh to load (inside `~/.zshrc`):
@@ -37,7 +37,7 @@ Automatically activate venv when enter the project folder
 1. Clone this repository somewhere on your machine.
 
     ```sh
-    git clone https://github.com/ikhomutov/zsh-auto-venv ~/.zsh/zsh-auto-venv
+    git clone https://github.com/k-sriram/zsh-auto-venv ~/.zsh/zsh-auto-venv
     ```
 
 2. Add the following to your `.zshrc`:
