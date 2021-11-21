@@ -52,7 +52,7 @@ Automatically activate venv when you enter a project folder.
 
 `zsh-auto-venv` can be configured using environment variables.
 
-Disable automatic activation by setting `AUTOVENV_DISABLE` to any value.
+Disable automatic activation by setting `AUTOVENV_DISABLE` to any value. Most of the automatic features are disabled when the user manually activates a `venv`.
 
 For the purposes of auto-activation only `venv`s with the name defined by `AUTOVENV_DIR` are looked for. It not set a default value of `.venv` is used.
 
