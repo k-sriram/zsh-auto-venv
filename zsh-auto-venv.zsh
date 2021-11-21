@@ -144,6 +144,10 @@ function autovenv::activate() {
     done
     base_path=$PWD
     if [[ -n "$venv_path" ]]; then
+        if [[ ! -d $venv_path ]]; then
+            autovenv::error $verb "Given path is not a directory"
+            return 1
+        fi
         if [[ $venv_path[1] != "/" ]]; then
             autovenv::verbose $verb "Path is relative converting to absolute"
             venv_path="$PWD/$venv_path"
@@ -245,11 +249,12 @@ function autovenv::activate() {
 }
 
 function autovenv::autovenv(){
+    if [[ -z "$VIRTUAL_ENV" && -n "$AUTOVENV" ]] unset AUTOVENV
     if [[ -n $AUTOVENV_DISABLE ]]; then
         return
     fi
     # First check auto deactivate
-    if [[ -n "$VIRTUAL_ENV" && -n "$AUTOVENV_AUTODEACTIVATE" ]]; then
+    if [[ -n "$VIRTUAL_ENV" && -z "$AUTOVENV_NOAUTODEACTIVATE" ]]; then
         local parentdir
         parentdir="$(dirname "$VIRTUAL_ENV")"
         # Only deactivate if autovenv autoactivated the venv and we are outside the venv directory
@@ -257,7 +262,7 @@ function autovenv::autovenv(){
             autovenv::deactivate
         fi
     fi
-    if [[ -z "$VIRTUAL_ENV" || -n "$AUTOVENV_SUBDIR_PRIORITY" && -z $AUTOVENV ]]; then
+    if [[ -z "$VIRTUAL_ENV" || -z "$AUTOVENV_DONT_ACTIVATE_SUBDIR_VENV" && -n "$AUTOVENV" ]]; then
         autovenv::activate -a
     fi
 }
