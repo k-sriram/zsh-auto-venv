@@ -284,7 +284,7 @@ function autovenv::autovenv(){
         parentdir="$(dirname "$VIRTUAL_ENV")"
         # Normalize for symbolic links
         parentdir="$(realpath $parentdir)"
-        rpwd = "$(realpath $PWD)"
+        rpwd="$(realpath $PWD)"
         # Only deactivate if autovenv autoactivated the venv and we are outside the venv directory
         if [[ "$AUTOVENV" == "$VIRTUAL_ENV" && "$rpwd"/ != "$parentdir"/* ]]; then
             autovenv::deactivate
