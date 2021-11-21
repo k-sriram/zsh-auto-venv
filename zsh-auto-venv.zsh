@@ -74,7 +74,7 @@ function autovenv::_activate() {
     if [[ -z "$VIRTUAL_ENV" ]]; then
          autovenv::warning $verb "Autovenv backend: venv seems to be not activated"
     else
-        if [[ "$venv_path" != "$VIRTUAL_ENV" ]]; then
+        if [[ "$(realpath $venv_path)" != "$(realpath $VIRTUAL_ENV)" ]]; then
             if [[ -n $auto ]]; then
                 autovenv::warning $verb "Autovenv backend: venv misconfigured, you probably moved it after creating it. Deactivating"
                 autovenv::deactivate
@@ -145,6 +145,7 @@ function autovenv::activate() {
         esac
         shift
     done
+    # Print help
     if [[ -n $printhelp ]]; then
         local hstyle optstyle keystyle nostyle
         hstyle="$fg_bold[green]"
@@ -162,7 +163,7 @@ function autovenv::activate() {
         echo -e "  ${optstyle}-v${nostyle}                verbose\n"
         return
     fi
-
+    # If a path is given, normalize the intention
     base_path=$PWD
     if [[ -n "$venv_path" ]]; then
         if [[ ! -d $venv_path ]]; then
@@ -170,8 +171,8 @@ function autovenv::activate() {
             return 1
         fi
         if [[ $venv_path[1] != "/" ]]; then
-            autovenv::verbose $verb "Path is relative converting to absolute"
-            venv_path="$PWD/$venv_path"
+            venv_path="$(realpath -s $venv_path)"
+            autovenv::verbose $verb "Path is relative converting to absolute $venv_path"
         fi
         if [[ -f $venv_path/bin/activate ]]; then
             autovenv::verbose $verb "Given path is a venv $venv_path"
@@ -183,6 +184,7 @@ function autovenv::activate() {
     else
         autovenv::verbose $verb "No explicit venv path given"
     fi
+    # if not given path is not a venv try to find for one
     if [[ -z "$venv_path" ]]; then
         autovenv::verbose $verb "Looking for venv with base path $base_path"
         if [[ -n $auto ]]; then
@@ -216,12 +218,14 @@ function autovenv::activate() {
                         autovenv::verbose $verb "Git repository found. Looking for venvs in $git_root"
                         venvs=($(autovenv::_find_venv "$git_root"))
                     fi
+                else
+                    autovenv::verbose $verb "Not in a git repository"
                 fi
                 if [[ -n "$venvs" ]]; then
                     venv_dir=$git_root
                     autovenv::verbose $verb "venv(s) found in git root"
                 else
-                    autovenv::verbose $verb "No venv found in git rooy"
+                    [[ -n "$git_root" ]] && autovenv::verbose $verb "No venv found in git root"
                     if [[ $base_path != $HOME ]]; then
                         # else try home
                         autovenv::verbose $verb "Looking for venv in home directory"
@@ -276,10 +280,13 @@ function autovenv::autovenv(){
     fi
     # First check auto deactivate
     if [[ -n "$VIRTUAL_ENV" && -z "$AUTOVENV_NOAUTODEACTIVATE" ]]; then
-        local parentdir
+        local parentdir rpwd
         parentdir="$(dirname "$VIRTUAL_ENV")"
+        # Normalize for symbolic links
+        parentdir="$(realpath $parentdir)"
+        rpwd = "$(realpath $PWD)"
         # Only deactivate if autovenv autoactivated the venv and we are outside the venv directory
-        if [[ "$AUTOVENV" == "$VIRTUAL_ENV" && "$PWD"/ != "$parentdir"/* ]]; then
+        if [[ "$AUTOVENV" == "$VIRTUAL_ENV" && "$rpwd"/ != "$parentdir"/* ]]; then
             autovenv::deactivate
         fi
     fi
