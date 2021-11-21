@@ -119,7 +119,7 @@ function autovenv::_check_path()
 }
 
 function autovenv::activate() {
-    local args verb auto venv_path excode base_path
+    local args verb auto venv_path excode base_path printhelp
     args=($@)
     verb=0
     excode=0
@@ -134,6 +134,9 @@ function autovenv::activate() {
             -a)
                 auto=1
                 ;;
+            -h | --help)
+                printhelp=1
+                ;;
             -*)
                 ;;
             *)
@@ -142,6 +145,24 @@ function autovenv::activate() {
         esac
         shift
     done
+    if [[ -n $printhelp ]]; then
+        local hstyle optstyle keystyle nostyle
+        hstyle="$fg_bold[green]"
+        optstyle="$fg[magenta]"
+        keystyle="$fg[blue]"
+        nostyle=$reset_color
+        echo -e "${hstyle}USAGE: ${keystyle}$0 ${optstyle}[-a] [-h] [-q] [-v] ${keystyle}VENVPATH${nostyle}\n"
+        echo -e "${hstyle}ARGUMENTS:${nostyle}"
+        echo -e "  ${keystyle}VENVPATH${nostyle}          location of the venv"
+        echo -e ""
+        echo -e "${hstyle}OPTIONS:${nostyle}"
+        echo -e "  ${optstyle}-a${nostyle}                automatic mode"
+        echo -e "  ${optstyle}-h, --help${nostyle}        print this message"
+        echo -e "  ${optstyle}-q${nostyle}                quiet"
+        echo -e "  ${optstyle}-v${nostyle}                verbose\n"
+        return
+    fi
+
     base_path=$PWD
     if [[ -n "$venv_path" ]]; then
         if [[ ! -d $venv_path ]]; then
