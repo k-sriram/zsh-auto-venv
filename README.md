@@ -68,4 +68,4 @@ This plugin provides a function `autovenv::activate`. If you intend to use it, i
 alias venv='autovenv::activate'
 ```
 
-This function searches for `venv`s. It first looks in the current directory / path passed as argument, then at the root of a git repository if inside one, then in the user's home directory.
+This function searches for `venv`s. It first looks in the current directory / path passed as argument, then at the root of a git repository if inside one, then in the user's home directory. This function is not just limited to `venv`s of name `AUTOENV_DIR`, it looks for them by checking if they have a `./bin/activate` file.
