@@ -74,7 +74,7 @@ function autovenv::_activate() {
     if [[ -z "$VIRTUAL_ENV" ]]; then
          autovenv::warning $verb "Autovenv backend: venv seems to be not activated"
     else
-        if [[ "$(realpath $venv_path)" != "$(realpath $VIRTUAL_ENV)" ]]; then
+        if [[ "$(realpath -q $venv_path)" != "$(realpath -q $VIRTUAL_ENV)" ]]; then
             if [[ -n $auto ]]; then
                 autovenv::warning $verb "Autovenv backend: venv misconfigured, you probably moved it after creating it. Deactivating"
                 autovenv::deactivate
@@ -171,7 +171,7 @@ function autovenv::activate() {
             return 1
         fi
         if [[ $venv_path[1] != "/" ]]; then
-            venv_path="$(realpath -s $venv_path)"
+            venv_path="$(realpath -s -q $venv_path)"
             autovenv::verbose $verb "Path is relative converting to absolute $venv_path"
         fi
         if [[ -f $venv_path/bin/activate ]]; then
@@ -283,15 +283,15 @@ function autovenv::autovenv(){
         local parentdir rpwd
         parentdir="$(dirname "$VIRTUAL_ENV")"
         # Normalize for symbolic links
-        parentdir="$(realpath $parentdir)"
-        rpwd="$(realpath $PWD)"
+        parentdir="$(realpath -q $parentdir)"
+        rpwd="$(realpath -q $PWD)"
         # Only deactivate if autovenv autoactivated the venv and we are outside the venv directory
         if [[ "$AUTOVENV" == "$VIRTUAL_ENV" && "$rpwd"/ != "$parentdir"/* ]]; then
             autovenv::deactivate
         fi
     fi
     if [[ -z "$VIRTUAL_ENV" || -z "$AUTOVENV_DONT_ACTIVATE_SUBDIR_VENV" && -n "$AUTOVENV" ]]; then
-        autovenv::activate -a
+        autovenv::activate -a -q
     fi
 }
 
